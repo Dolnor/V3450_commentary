@@ -169,11 +169,12 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
         DBGS,   8, 
         THOF,   8, 
         ACT1,   8, 
-        ACTT,   8, //Active Temperature
-        PSVT,   8, //Passive Temperature
+        ACTT,   8, //Active Temperature - OS increases the power consumption of the system (for example, by turning on a fan) to reduce the temperature of the machine
+        PSVT,   8, //Passive Temperature - OS reduces the power consumption of devices at the cost of system performance to reduce the temperature of the machine
         TC1V,   8, //Thermal Constant 1
-        TC2V,   8, //Thermal Constant 2
+        TC2V,   8, //Thermal Constant 2 (1 & 2 are usd in passive cooling formula
         TSPV,   8, //Thermal Sampling Period
+		*/C1 and C2 are used in passive cooling formula: dPerformance[%]= C1*(Tn-T(n-1))+C2*(Tn-Tt), where Tn is temperature from curent sample, T(n-1) is temperature from previous sample, but Tt is target temperature of PSVT */
         CRTT,   8, //Critical Temperature (Trip Point)
         DTSE,   8, 
         DTS1,   8, //CPU Core 0 DTS
@@ -3758,10 +3759,10 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         TTRT,   1, 
                         CCPU,   1, 
                         Offset (0x55), 
-                        OTPC,   8, // 0x55
-                        VGAT,   8, // 0x56 00
-                        CHPT,   8, // 0x57 00
-                        CPUT,   8, // 0x58 00
+                        OTPC,   8, // 0x55 ?? Temperature (about 0x30 or 0x2F)
+                        VGAT,   8, // 0x56 0x00
+                        CHPT,   8, // 0x57 0x00
+                        CPUT,   8, // 0x58 0x00
                         SYST,   8, // 0x59 System Temperature - DIMM (AIDA64)
                         DTS1,   8, // 0x5A CPU Package Temperature
                         DTS2,   8, // 0x5B Auxiliary Temperature (AIDA64)
@@ -3779,12 +3780,12 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         DAC2,   8, 
                         FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0x00/0x01
                         CTL1,   16, // 0x64 Critical Trip Level?	02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
-                        CTL2,   16, // 0x66 Remais 0x00 0x00
+                        CTL2,   16, // 0x66 0x00 0x00
                         FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM
                         FANL,   8,  // 0x69 Tachometer Low Order RPM	AF / AA / B4 / 97 / 9B / 92
-                        RPM2,   16, // 0x6A Remais 0x00 0x00
-                        FTAC,   16, // 0x6C FAN Tachometer - Remais 0x00 0x00
-                        FSPD,   16, // 0x6E FAN Speed - Remais 0x00 0x00
+                        RPM2,   16, // 0x6A 0x00 0x00
+                        FTAC,   16, // 0x6C FAN Tachometer - 0x00 0x00
+                        FSPD,   16, // 0x6E FAN Speed - 0x00 0x00
                         SLED,   1,  // 0x70 bit 1 Sroll Lock LED - Absent
                         NLED,   1,  // 0x70 bit 2 Num Lock LED - Absent
                         CLED,   1,  // 0x70 bit 3 Caps Lock LED 
@@ -3819,45 +3820,45 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         Offset (0x9D), 
                         SBF0,   8, 
                         Offset (0xA0), 
-                        CAP0,   16, 
-                        RCP0,   16, 
-                        VOT0,   16, 
-                        CRT0,   16, 
-                        BTM0,   16, 
-                        BST0,   16, 
-                        BRC0,   16, 
-                        FCP0,   16, 
-                        DCP0,   16, 
-                        DVT0,   16, 
-                        MER0,   16, 
-                        MFD0,   16, 
-                        BSN0,   16, 
-                        MAS0,   16, 
+                        CAP0,   16, // 0xA0 Battery Capacity, mAh/mWh
+                        RCP0,   16, // 0xA2
+                        VOT0,   16, // 0xA4 Battery Voltage, mV
+                        CRT0,   16, // 0xA6 Batery Current, mA/mW
+                        BTM0,   16, // 0xA8
+                        BST0,   16, // 0xAA
+                        BRC0,   16, // 0xAC Battery Charge, % (64=100%)
+                        FCP0,   16, // 0xAE Last Full Charge Capacity
+                        DCP0,   16, // 0xB0 Designed Battery Capacity (0x1130=4400 mWh)
+                        DVT0,   16, // 0xB2 Designed Battery Voltage  (0x2B5C=11100mV=11.1 V)
+                        MER0,   16, // 0xB4
+                        MFD0,   16, // 0xB6
+                        BSN0,   16, // 0xB8 Battery Serial Number (10788)
+                        MAS0,   16, // 0xBA 
                         Offset (0xC3), 
-                        BCS0,   8, 
-                        MNN0,   8, 
-                        DNN0,   8, 
-                        BCN0,   8, 
-                        BOC0,   8, 
-                        BFC0,   8, 
-                        BMD0,   8, 
-                        CPL0,   8, 
-                        B0IN,   1, 
-                        B0DY,   1, 
-                        B0PF,   1, 
-                        B0TF,   1, 
-                        B0CL,   1, 
-                        B0LW,   1, 
-                        B0DC,   1, 
-                        B0DD,   1, 
-                        B0FC,   1, 
-                        B0PC,   1, 
-                        B0OT,   1, 
-                            ,   1, 
-                        B0WK,   1, 
-                        B0IC,   1, 
-                        B0WC,   1, 
-                        B0L3,   1, 
+                        BCS0,   8, // 0xC3
+                        MNN0,   8, // 0xC4 Batterey OEM		(0x09 = "LGC" - LG Chem)
+                        DNN0,   8, // 0xC5 Batterey Model 	(0xFF = "Dell")
+                        BCN0,   8, // 0xC6 Battery Type 	(0x02="LION", 0x03="NICD", 0x04="NIMH")
+                        BOC0,   8, // 0xC7 					(0x64 appears, requres monitoring)
+                        BFC0,   8, // 0xC8 
+                        BMD0,   8, // 0xC9 
+                        CPL0,   8, // 0xCA 
+                        B0IN,   1, // 0xCB bit 1 Battery is Installed
+                        B0DY,   1, // 0xCB bit 2
+                        B0PF,   1, // 0xCB bit 3
+                        B0TF,   1, // 0xCB bit 4 
+                        B0CL,   1, // 0xCB bit 5 Batery at Critical Level
+                        B0LW,   1, // 0xCB bit 6 Battery at Low Level
+                        B0DC,   1, // 0xCB bit 7 Battery is Discharging
+                        B0DD,   1, // 0xCB bit 8
+                        B0FC,   1, // 0xCC bit 1 Battery is Fully Charged
+                        B0PC,   1, // 0xCC bit 2
+                        B0OT,   1, // 0xCC bit 3
+                            ,   1, // 0xCC bit 4
+                        B0WK,   1, // 0xCC bit 5
+                        B0IC,   1, // 0xCC bit 6 Batery is Charging
+                        B0WC,   1, // 0xCC bit 7
+                        B0L3,   1, // 0xCC bit 8
                         B0FG,   1, 
                         B0DG,   1, 
                         B0VL,   1, 
@@ -3933,7 +3934,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         SLM2,   8
                     }
 
-                    Mutex (MUT0, 0x00)
+                    Mutex (MUT0, 0x00) //MUTEX
                     Method (_QB1, 0, NotSerialized)  // _Qxx: EC Query
                     {
                         If (LOr (LEqual (OSYS, 0x07D1), LEqual (OSYS, 0x07D2)))
@@ -5992,20 +5993,21 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         Mutex (ECMU, 0x00)
                         Name (PAK0, Package (0x0D)
                         {
-                            One, 
-                            0xFFFFFFFF, 
-                            0xFFFFFFFF, 
-                            Zero, 
-                            0xFFFFFFFF, 
-                            Zero, 
-                            Zero, 
-                            0x64, 
-                            Zero, 
-                            "BAT0", 
-                            "123456789", 
-                            "LiON", 
-                            "PTL"
+						    One,            //0x00 Power Unit
+                            0xFFFFFFFF,     //0x01 Design Capacity  
+                            0xFFFFFFFF,     //0x02 Last Full Charge Capacity
+                            Zero,           //0x03 Battery Technology
+                            0xFFFFFFFF,     //0x04 Design Voltage  
+                            Zero,           //0x05 Design Capacity of Warning
+                            Zero,           //0x06 Design Capacity of Low  
+                            0x64,           //0x07 Battery Capacity Granularity 1
+                            Zero,           //0x08 Battery Capacity Granularity 2
+                            "BAT0",         //0x09 Model Number
+                            "123456789",    //0x0A Serial Number
+                            "LiON",         //0x0B Battery Type
+                            "PTL" ,         //0x0C OEM Information  
                         })
+
                         Method (BTST, 0, NotSerialized)
                         {
                             Acquire (^^PCI0.LPCB.EC0.MUT0, 0xFFFF)
@@ -6239,10 +6241,10 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
 
                         Name (BFB0, Package (0x04)
                         {
-                            Zero, 
-                            0xFFFFFFFF, 
-                            0x1034, 
-                            0x2A30
+                            Zero, 		//Battery State (bit 1 - discharging, bit 2 - charging, bit 3 - critical state)
+                            0xFFFFFFFF, //Battery Present Current Rate, mW or mA
+                            0x1034, 	//Battery Remaining Capacity
+                            0x2A30		//Battery Present Voltage
                         })
                         Method (_BST, 0, NotSerialized)  // _BST: Battery Status
                         {
