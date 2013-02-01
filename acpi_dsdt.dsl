@@ -3728,10 +3728,10 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         SUSB,   1, // 0x41 bit 1
                         SUSC,   1, // 0x41 bit 2
                         FANO,   1, // 0x41 bit 3 Fan ON/OFF, if you set the bit to 0 when fan level (0x63) of a working fan has been set to 0, the fan will spin at a constant speed. set to 1 and it will start dropping RPMs again
-								   // if bit 3 for a working fan is set to 0 prior to seting level to 0, it will not lock the fan at a constant rotation speed. if at this point you set fan level (0x63) to 1 (or 2 if it had hit high trip point), it will turn off the fan completely.
+								   // if bit 3 for a working fan is set to 0 prior to seting level to 0, it will not lock the fan at a constant rotation speed. if at this point you set fan level (0x63) to 1, it will turn off the fan completely.
 								   // as soon as EC figures temp is higher than the trip treshold it will kick the fan back on.
 								   // essentially you could set 0x63 to 0, wait till fan rpm drops to acertain desired optimal speed, set bit 3 to 0 to lock the fan at low RPM.
-								   // then keep analyzing temperature, when it reaches low treshold you set 0x63 to 1 (or 2), the fan shuts off and kicks on again after a slight delay.. or any other way you like
+								   // then keep analyzing temperature, when it reaches low treshold you set 0x63 to 1, the fan shuts off and kicks on again after a slight delay.. or any other way you like
                         SNIF,   1, // 0x41 bit 4
                         LIDA,   1, // 0x41 bit 5
                         Offset (0x42), 
@@ -3782,10 +3782,10 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         FATO,   1, 
                         DAC1,   8, 
                         DAC2,   8, 
-                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0x00/ 0x01 (trip point low speed) /0x02 (trip pointhigh speed), if you disable this by hnd fan sarts dropping GRADALLY
+                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0x00/ 0x01 (trip point low speed) /0x02 (trip pointhigh speed) / 0x03, if you disable this by setting 0x00, the fan starts dropping speed GRADALLY. seting 0x01 again shuts off the fan completely. can't really override 0x02 as it inceases RPM instead when set to 0x00
                         CTL1,   16, // 0x64 Critical Trip Level?		02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
                         CTL2,   16, // 0x66 0x00 0x00
-                        FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM(3247)
+                        FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM(3247)  (11 BB) =  level3
                         FANL,   8,  // 0x69 Tachometer Low Order RPM	AF / AA / B4 / 97 / 9B / 92
                         RPM2,   16, // 0x6A 0x00 0x00
                         FTAC,   16, // 0x6C FAN Tachometer - 0x00 0x00
