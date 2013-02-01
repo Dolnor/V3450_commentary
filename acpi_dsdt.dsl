@@ -172,7 +172,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
         ACTT,   8, //Active Temperature - OS increases the power consumption of the system (for example, by turning on a fan) to reduce the temperature of the machine
         PSVT,   8, //Passive Temperature - OS reduces the power consumption of devices at the cost of system performance to reduce the temperature of the machine
         TC1V,   8, //Thermal Constant 1
-        TC2V,   8, //Thermal Constant 2 (1 & 2 are usd in passive cooling formula
+        TC2V,   8, //Thermal Constant 2
         TSPV,   8, //Thermal Sampling Period
 		*/C1 and C2 are used in passive cooling formula: dPerformance[%]= C1*(Tn-T(n-1))+C2*(Tn-Tt), where Tn is temperature from curent sample, T(n-1) is temperature from previous sample, but Tt is target temperature of PSVT */
         CRTT,   8, //Critical Temperature (Trip Point)
@@ -184,7 +184,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
         REVN,   8, 
         Offset (0x28), 
         APIC,   8, 
-        TCNT,   8, //Thermal pare (CPU) count
+        TCNT,   8, //Thermocouple (CPU) count
         PCP0,   8, 
         PCP1,   8, 
         PPCM,   8, 
@@ -373,12 +373,12 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
         Offset (0x50), 
         BRGA,   4, //Brightness on AC Power
         Offset (0x51), 
-        USBK,   1, //USB Key (Device) presence in USB ports
+        USBK,   1, //USB Key presence in USB ports
         Offset (0x52), 
         OPTF,   4, 
         SLPO,   4, //Sleep Option(0x00/0x01)
         OSTY,   8, //Operating Sysem Type
-        BRGD,   4 //Brightness on DC POwer
+        BRGD,   4  //Brightness on DC POwer
     }
 
     Scope (_SB)
@@ -3718,7 +3718,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         ALD0,   8, // 0x3E
                         ALD1,   8, // 0x3F
                         ACIN,   1, // 0x40 bit 1 AC chager is plugged in
-                        PWON,   1, // 0x40 bit 2 AC power is on, macine is powere
+                        PWON,   1, // 0x40 bit 2 AC power is on, machine is powered
                         INS3,   1, // 0x40 bit 3 Machine is in S3 state
                         WPSW,   1, // 0x40 bit 4
                         INS4,   1, // 0x40 bit 5 Machine is in S4 state
@@ -3727,7 +3727,11 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         RVCO,   1, // 0x40 bit 8
                         SUSB,   1, // 0x41 bit 1
                         SUSC,   1, // 0x41 bit 2
-                        FANO,   1, // 0x41 bit 3 Fan ON/OFF
+                        FANO,   1, // 0x41 bit 3 Fan ON/OFF, if you set the bit to 0 when fan level (0x63) of a working fan has been set to 0, the fan will spin at a constant speed. set to 1 and it will start dropping RPMs again
+								   // if bit 3 for a working fan is set to 0 prior to seting level to 0, it will not lock the fan at a constant rotation speed. if at this point you set fan level (0x63) to 1 (or 2 if it had hit high trip point), it will turn off the fan completely.
+								   // as soon as EC figures temp is higher than the trip treshold it will kick the fan back on.
+								   // essentially you could set 0x63 to 0, wait till fan rpm drops to acertain desired optimal speed, set bit 3 to 0 to lock the fan at low RPM.
+								   // then keep analyzing temperature, when it reaches low treshold you set 0x63 to 1 (or 2), the fan shuts off and kicks on again after a slight delay.. or any other way you like
                         SNIF,   1, // 0x41 bit 4
                         LIDA,   1, // 0x41 bit 5
                         Offset (0x42), 
@@ -3750,9 +3754,9 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         Offset (0x45), 
                             ,   4, // 0x45 touchpad LED Disabled=20 / A0=Enabled (bit 8 set to 1 enables LED)
                         QA3E,   1, 
-								   // 0x46 bi 2 pressing mobility center QS button sets 1
-								   // 0x46 bi 3 pressing support center QS button sets 1
-								   // 0x46 bi 4 pressing user defined QS button sets 1
+								   // 0x46 bit 2 pressing mobility center QS button sets 1
+								   // 0x46 bit 3 pressing support center QS button sets 1
+								   // 0x46 bit 4 pressing user defined QS button sets 1
                         Offset (0x50), 
                         TOFS,   8, 
                         Offset (0x53), 
@@ -3765,7 +3769,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         CPUT,   8, // 0x58 0x00
                         SYST,   8, // 0x59 System Temperature - DIMM (AIDA64)
                         DTS1,   8, // 0x5A CPU Package Temperature
-                        DTS2,   8, // 0x5B Auxiliary Temperature (AIDA64)
+                        DTS2,   8, // 0x5B PCH (Auxiliary) Temperature (AIDA64)
 						DTS3,	8, // 0x5C Cipset Temperatue (AIDA64) [custom added]
                         Offset (0x5E), 
                         HWSN,   8, // 0x5E Hardware Sensor remains at 0x55
@@ -3778,10 +3782,10 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         FATO,   1, 
                         DAC1,   8, 
                         DAC2,   8, 
-                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0x00/0x01
-                        CTL1,   16, // 0x64 Critical Trip Level?	02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
+                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0x00/ 0x01 (trip point low speed) /0x02 (trip pointhigh speed), if you disable this by hnd fan sarts dropping GRADALLY
+                        CTL1,   16, // 0x64 Critical Trip Level?		02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
                         CTL2,   16, // 0x66 0x00 0x00
-                        FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM
+                        FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM(3247)
                         FANL,   8,  // 0x69 Tachometer Low Order RPM	AF / AA / B4 / 97 / 9B / 92
                         RPM2,   16, // 0x6A 0x00 0x00
                         FTAC,   16, // 0x6C FAN Tachometer - 0x00 0x00
@@ -3814,11 +3818,12 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         Offset (0x8B), 
                         KBTL,   8, // 0x8B Keyboard Brigtnes Timout Level 5sec=01 / 15sec=03/ 30sec=06 / 1min=0C / 5min=0xC / 15min=B4 / Never off=00
                         KBBL,   8, // 0x8C Keyoard Brightness Level, 0x00/0x01/0x02 are possible 
-                        BRSL,   8, 
-                        PLGH,   8, 
-                        PLGL,   8, 
+                        BRSL,   8, // 0x8D
+                        PLGH,   8, // 0x8E 
+                        PLGL,   8, // 0x8F
                         Offset (0x9D), 
-                        SBF0,   8, 
+                        SBF0,   8, // 0x9D -- 0x01 always
+								   // 0x9F -- 0x01 when overriding fan mode
                         Offset (0xA0), 
                         CAP0,   16, // 0xA0 Battery Capacity, mAh/mWh
                         RCP0,   16, // 0xA2
@@ -3830,16 +3835,16 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         FCP0,   16, // 0xAE Last Full Charge Capacity
                         DCP0,   16, // 0xB0 Designed Battery Capacity (0x1130=4400 mWh)
                         DVT0,   16, // 0xB2 Designed Battery Voltage  (0x2B5C=11100mV=11.1 V)
-                        MER0,   16, // 0xB4
+                        MER0,   16, // 0xB4 
                         MFD0,   16, // 0xB6
                         BSN0,   16, // 0xB8 Battery Serial Number (10788)
                         MAS0,   16, // 0xBA 
                         Offset (0xC3), 
                         BCS0,   8, // 0xC3
-                        MNN0,   8, // 0xC4 Batterey OEM		(0x09 = "LGC" - LG Chem)
-                        DNN0,   8, // 0xC5 Batterey Model 	(0xFF = "Dell")
-                        BCN0,   8, // 0xC6 Battery Type 	(0x02="LION", 0x03="NICD", 0x04="NIMH")
-                        BOC0,   8, // 0xC7 					(0x64 appears, requres monitoring)
+                        MNN0,   8, // 0xC4 Batterey OEM					(0x09 = "LGC" - LG Chem)
+                        DNN0,   8, // 0xC5 Batterey Model 				(0xFF = "Dell")
+                        BCN0,   8, // 0xC6 Battery Type 				(0x02="LION", 0x03="NICD", 0x04="NIMH")
+                        BOC0,   8, // 0xC7 Battery Capacity Granularity	(0x64 appears, requres monitoring)
                         BFC0,   8, // 0xC8 
                         BMD0,   8, // 0xC9 
                         CPL0,   8, // 0xCA 
