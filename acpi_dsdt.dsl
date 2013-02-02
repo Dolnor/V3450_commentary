@@ -2,8 +2,6 @@
  * Intel ACPI Component Architecture
  * AML Disassembler version 20121018-32 [Oct 18 2012]
  * Copyright (c) 2000 - 2012 Intel Corporation
- * 
- * Disassembly of C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.bin, Thu Nov 08 12:38:26 2012
  *
  * Original Table Header:
  *     Signature        "DSDT"
@@ -3742,7 +3740,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         KBER,   1, 
                         ECCB,   1, 
                         CIRB,   1, 
-                        MUTE,   1, //0x42 bit 8 
+                        MUTE,   1, //0x42 bit 8 MUTEX
                         TSN0,   1, //0x43 bit 1 
                         TSN1,   1, 
                         OSTP,   1, 
