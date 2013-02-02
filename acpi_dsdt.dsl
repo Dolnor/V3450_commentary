@@ -3756,7 +3756,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
 								   // 0x46 bit 3 pressing support center QS button sets 1
 								   // 0x46 bit 4 pressing user defined QS button sets 1
                         Offset (0x50), 
-                        TOFS,   8, 
+                        TOFS,   8, // 0x50 sometimes being set to 0xFF
                         Offset (0x53), 
                         TTRT,   1, 
                         CCPU,   1, 
@@ -3771,16 +3771,17 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
 						DTS3,	8, // 0x5C Cipset Temperatue (AIDA64) [custom added]
                         Offset (0x5E), 
                         HWSN,   8, // 0x5E Hardware Sensor remains at 0x55
-                        CTYP,   8, // 
-                        FCNT,   1, 
-                        FTST,   1, 
+                        CTYP,   8, // 0x5F ?? Type
+						
+                        FCNT,   1, // 0x60 bit 1 Fan Continious Mode - if set to 1 (resets to 0 after) when fan is active and bit 7 is 0, the fan will run constantly at 5284 RPM, 0x63 is set to 0xFF. stops when bit 7 is set to high - auto mode gets eabled. sometimes wont work
+                        FTST,   1, // 0x60 bit 2 Fan Test Mode? Most likely set to 1 for Dell ePSA tests, when set to 1 changes 0x63 to 0xFF
                             ,   3, 
-                        FADJ,   1, 
-                        TCTL,   1, // bit set to 1
-                        FATO,   1, 
+                        FADJ,   1, // 0x60 bit 6
+                        TCTL,   1, // 0x60 bit 7 Tachometer Control ??? normaly set to 1, if set to 0 fan level at 0x63 is set to 0xFF -  Yes! Setting this to 0 disables auto mode
+                        FATO,   1, // 0x60 bit 8 Fan Tachometer Override ?
                         DAC1,   8, 
                         DAC2,   8, 
-                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0x00/ 0x01 (trip point low speed) /0x02 (trip pointhigh speed) / 0x03, if you disable this by setting 0x00, the fan starts dropping speed GRADALLY. seting 0x01 again shuts off the fan completely. can't really override 0x02 as it inceases RPM instead when set to 0x00
+                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0xFF = Manual Mode ??? 0x00/ 0x01 (trip point low speed) /0x02 (trip pointhigh speed) / 0x03, if you disable this by setting 0x00, the fan starts dropping speed GRADALLY. seting 0x01 again shuts off the fan completely. can't really override 0x02 as it inceases RPM instead when set to 0x00
                         CTL1,   16, // 0x64 Critical Trip Level?		02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
                         CTL2,   16, // 0x66 0x00 0x00
                         FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM(3247)  (11 BB) =  level3
