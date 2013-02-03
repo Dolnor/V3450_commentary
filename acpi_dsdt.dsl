@@ -3703,18 +3703,18 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                     {
                         WKEV,   8, // 0x00 Wake Event (used in LID Power State Wake) possible values: 0x02/0x00
                         Offset (0x18), 
-                        PRTC,   8, 
-                        SSTA,   8, 
-                        SADR,   8, 
-                        SCMD,   8, 
+                        PRTC,   8,  // 0x18 SMBus Protocol
+                        SSTA,   8,  // 0x19 SMBus Status
+                        SADR,   8,  // 0x1A SMBus Address
+                        SCMD,   8,  // 0x1B SMBus Command
                         SMID,   8, 
-                        SDAT,   8, 
+                        SDAT,   8,  // 0x1D SMBus Data
                         SDT1,   8, 
                         Offset (0x3C), 
-                        BCNT,   8, // 0x3C
-                        ALRA,   8, // 0x3D
-                        ALD0,   8, // 0x3E
-                        ALD1,   8, // 0x3F
+                        BCNT,   8, // 0x3C SMBus Block Count, has value of 0x14
+                        ALRA,   8, // 0x3D SMBus Alarm Address
+                        ALD0,   8, // 0x3E SMBus Alarm Data[0]
+                        ALD1,   8, // 0x3F SMBus Alarm Data[1]
                         ACIN,   1, // 0x40 bit 1 AC chager is plugged in
                         PWON,   1, // 0x40 bit 2 AC power is on, machine is powered
                         INS3,   1, // 0x40 bit 3 Machine is in S3 state
@@ -3722,8 +3722,8 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         INS4,   1, // 0x40 bit 5 Machine is in S4 state
                         SMON,   1, // 0x40 bit 6
                         WPWG,   1, // 0x40 bit 7
-                        RVCO,   1, // 0x40 bit 8
-                        SUSB,   1, // 0x41 bit 1
+                        RVCO,   1, // 0x40 bit 8 set to 1
+                        SUSB,   1, // 0x41 bit 1 set to 1 (USB PowerShare ?)
                         SUSC,   1, // 0x41 bit 2
                         FANO,   1, // 0x41 bit 3 Fan ON/OFF, if you set the bit to 0 when fan level (0x63) of a working fan has been set to 0, the fan will spin at a constant speed. set to 1 and it will start dropping RPMs again
 								   // if bit 3 for a working fan is set to 0 prior to seting level to 0, it will not lock the fan at a constant rotation speed. if at this point you set fan level (0x63) to 1, it will turn off the fan completely.
@@ -3734,13 +3734,13 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         LIDA,   1, // 0x41 bit 5
                         Offset (0x42), 
                         KBBP,   1, 
-                        DADP,   1, 
-                        MMBT,   1, //0x42 bit 3 
+                        DADP,   1, //0x42 bit 2 set to 1
+                        MMBT,   1, 
                         KBSO,   1, 
                         KBER,   1, 
                         ECCB,   1, 
                         CIRB,   1, 
-                        MUTE,   1, //0x42 bit 8 MUTEX
+                        MUTE,   1, //0x42 bit 8 MUTEX used for SMBus Lock
                         TSN0,   1, //0x43 bit 1 
                         TSN1,   1, 
                         OSTP,   1, 
@@ -3776,21 +3776,21 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         FCNT,   1, // 0x60 bit 1 Fan Continious Mode - if set to 1 (resets to 0 after) when fan is active and bit 7 is 0, the fan will run constantly at 5284 RPM, 0x63 is set to 0xFF. stops when bit 7 is set to high - auto mode gets eabled. sometimes wont work
                         FTST,   1, // 0x60 bit 2 Fan Test Mode? Most likely set to 1 for Dell ePSA tests, when set to 1 changes 0x63 to 0xFF
                             ,   3, 
-                        FADJ,   1, // 0x60 bit 6
-                        TCTL,   1, // 0x60 bit 7 Tachometer Control ??? normaly set to 1, if set to 0 fan level at 0x63 is set to 0xFF -  Yes! Setting this to 0 disables auto mode
+                        FADJ,   1, // 0x60 bit 6 Fan Adjustment ?
+                        TCTL,   1, // 0x60 bit 7 Thermal Control: 0-manual, 1-auto??? normaly set to 1, if set to 0 fan level at 0x63 is set to 0xFF -  Yes! Setting this to 0 disables auto mode
                         FATO,   1, // 0x60 bit 8 Fan Tachometer Override ?
                         DAC1,   8, 
                         DAC2,   8, 
-                        FLVL,   8,  // 0x63 FAN Level Enaled/Disaled 0xFF = Manual Mode ??? 0x00/ 0x01 (trip point low speed) /0x02 (trip pointhigh speed) / 0x03, if you disable this by setting 0x00, the fan starts dropping speed GRADALLY. seting 0x01 again shuts off the fan completely. can't really override 0x02 as it inceases RPM instead when set to 0x00
-                        CTL1,   16, // 0x64 Critical Trip Level?		02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
-                        CTL2,   16, // 0x66 0x00 0x00
-                        FANH,   8,  // 0x68 Tachometer High Order RPM 	0C / OC / 0C / 0C / 0C / 0C  (can reach 0x0F or even 0x10) < 4.5k RPM(3247)  (11 BB) =  level3
-                        FANL,   8,  // 0x69 Tachometer Low Order RPM	AF / AA / B4 / 97 / 9B / 92
-                        RPM2,   16, // 0x6A 0x00 0x00
-                        FTAC,   16, // 0x6C FAN Tachometer - 0x00 0x00
-                        FSPD,   16, // 0x6E FAN Speed - 0x00 0x00
-                        SLED,   1,  // 0x70 bit 1 Sroll Lock LED - Absent
-                        NLED,   1,  // 0x70 bit 2 Num Lock LED - Absent
+                        FLVL,   8,  // 0x63 FAN Level 0xFF = Manual Mode, 0x00/0x01/0x02/0x03, if you disable this by setting 0x00, the fan starts dropping speed GRADALLY. seting 0x01 again shuts off the fan completely. can't really override 0x02 as it inceases RPM instead when set to 0x00
+                        CTL1,   16, // 0x64 Current Tachometer Level?		02 98 / 02 97 / 02 xx / 02 9D / 02 9C / 02 9E
+                        CTL2,   16, 
+                        FANH,   8,  // 0x68 FAN High Order RPM 	0x0A-0x0C=L1, 0x0F-0x10=L2, 0x11=L3
+                        FANL,   8,  // 0x69 FAN Low Order RPM
+                        RPM2,   16,
+                        FTAC,   16,
+                        FSPD,   16,
+                        SLED,   1, 
+                        NLED,   1, 
                         CLED,   1,  // 0x70 bit 3 Caps Lock LED 
                         Offset (0x71), 
                         BT1L,   1, 
@@ -3843,7 +3843,7 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         MNN0,   8, // 0xC4 Batterey OEM					(0x09 = "LGC" - LG Chem)
                         DNN0,   8, // 0xC5 Batterey Model 				(0xFF = "Dell")
                         BCN0,   8, // 0xC6 Battery Type 				(0x02="LION", 0x03="NICD", 0x04="NIMH")
-                        BOC0,   8, // 0xC7 Battery Capacity Granularity	(0x64 appears, requres monitoring)
+                        BOC0,   8, // 0xC7 Battery Capacity Granularity1(0x64 appears, requres monitoring)
                         BFC0,   8, // 0xC8 
                         BMD0,   8, // 0xC9 
                         CPL0,   8, // 0xCA 
@@ -3851,16 +3851,16 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         B0DY,   1, // 0xCB bit 2
                         B0PF,   1, // 0xCB bit 3
                         B0TF,   1, // 0xCB bit 4 
-                        B0CL,   1, // 0xCB bit 5 Batery at Critical Level
-                        B0LW,   1, // 0xCB bit 6 Battery at Low Level
-                        B0DC,   1, // 0xCB bit 7 Battery is Discharging
+                        B0CL,   1, // 0xCB bit 5 Batery0 at Critical Level
+                        B0LW,   1, // 0xCB bit 6 Battery0 at Low Level
+                        B0DC,   1, // 0xCB bit 7 Battery0 is Discharging
                         B0DD,   1, // 0xCB bit 8
-                        B0FC,   1, // 0xCC bit 1 Battery is Fully Charged
+                        B0FC,   1, // 0xCC bit 1 Battery0 is Fully Charged
                         B0PC,   1, // 0xCC bit 2
                         B0OT,   1, // 0xCC bit 3
                             ,   1, // 0xCC bit 4
                         B0WK,   1, // 0xCC bit 5
-                        B0IC,   1, // 0xCC bit 6 Batery is Charging
+                        B0IC,   1, // 0xCC bit 6 Batery0 is Charging
                         B0WC,   1, // 0xCC bit 7
                         B0L3,   1, // 0xCC bit 8
                         B0FG,   1, 
@@ -3906,11 +3906,11 @@ DefinitionBlock ("C:/Users/Dmitry Seryogin/Desktop/acpi_dsdt.aml", "DSDT", 2, "D
                         MNN1,   8, 
                         DNN1,   8, 
                         BCN1,   8, 
-                        BOC1,   8, 
+                        BOC1,   8, // Battery Capacity Granularity2(0x64 appears, requres monitoring)
                         BFC1,   8, 
                         BMD1,   8, 
                         CPL1,   8, 
-                        B1IN,   1, 
+                        B1IN,   1, //
                         B1DY,   1, 
                         B1PF,   1, 
                         B1TF,   1, 
